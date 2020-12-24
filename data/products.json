@@ -1,1 +1,8 @@
-[{"title":"s"},{"title":"Second Book"}]
+[
+	{
+		"title": "First Book",
+		"imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=967&q=80",
+		"description": "First Book from Unsplash ",
+		"price": "5"
+	}
+]
