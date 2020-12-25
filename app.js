@@ -1,8 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-// const expressHbs = require('express-handlebars');
 
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+const errorHandler = require('./controllers/error-handling');
+// const expressHbs = require('express-handlebars');
 const app = express();
 
 // app.engine(
@@ -12,9 +15,6 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
-const errorHandler = require('./controllers/error-handling');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
