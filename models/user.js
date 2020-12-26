@@ -2,29 +2,21 @@ const DataTypes = require('sequelize').DataTypes;
 
 const sequalize = require('../util/database');
 
-const Product = sequalize.define('product', {
+const User = sequalize.define('user', {
 	id: {
 		type: DataTypes.INTEGER,
 		autoIncrement: true,
 		allowNull: false,
 		primaryKey: true
 	},
-	title: {
+	name: {
 		type: DataTypes.STRING,
 		allowNull: false
 	},
-	price: {
-		type: DataTypes.DOUBLE,
-		allowNull: false
-	},
-	imageUrl: {
-		type: DataTypes.STRING,
-		allowNull: false
-	},
-	description: {
+	email: {
 		type: DataTypes.STRING,
 		allowNull: false
 	}
 });
 
-module.exports = Product;
+module.exports = User;
