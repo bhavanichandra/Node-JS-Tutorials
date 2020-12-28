@@ -21,14 +21,14 @@ if (env.error) {
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(express.static(path.join(__dirname, 'public')));
 
-	// app.use((req, res, next) => {
-	// 	User.findUserById('5fe857ab17e70909f09eb6fb')
-	// 		.then((user) => {
-	// 			req.user = new User(user.name, user.email, user.cart, user._id);
-	// 			next();
-	// 		})
-	// 		.catch((err) => console.log(err));
-	// });
+	app.use((req, res, next) => {
+		User.findById('5fe96e88ede90348b894f85b')
+			.then((user) => {
+				req.user = user;
+				next();
+			})
+			.catch((err) => console.log(err));
+	});
 
 	app.use('/admin', adminRoutes);
 	app.use(shopRoutes);
@@ -38,6 +38,18 @@ if (env.error) {
 	mongoose
 		.connect(process.env.MONGODB_URL)
 		.then(() => {
+			User.findOne().then((user) => {
+				if (!user) {
+					const user = new User({
+						name: 'Bhavani',
+						email: 'test@test.com',
+						cart: {
+							items: []
+						}
+					});
+					user.save();
+				}
+			});
 			app.listen(3001);
 		})
 		.catch((err) => console.log(err));
