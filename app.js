@@ -58,18 +58,6 @@ if (env.error) {
 	mongoose
 		.connect(process.env.MONGODB_URL)
 		.then((result) => {
-			User.findOne().then((user) => {
-				if (!user) {
-					const user = new User({
-						name: 'Bhavani',
-						email: 'test@test.com',
-						cart: {
-							items: []
-						}
-					});
-					user.save();
-				}
-			});
 			app.listen(3000);
 		})
 		.catch((err) => {
