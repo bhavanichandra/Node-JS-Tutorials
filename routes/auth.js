@@ -10,13 +10,14 @@ router.get('/login', authController.getLogin);
 router.post(
 	'/login',
 	[
-		body('email', 'Please Enter valid Email').isEmail(),
+		body('email', 'Please Enter valid Email').isEmail().normalizeEmail(),
 		body(
 			'password',
 			'Please enter password with alphanumeric with  5 min chars'
 		)
 			.isLength({ min: 5 })
 			.isAlphanumeric()
+			.trim()
 	],
 	authController.postLogin
 );
@@ -35,14 +36,16 @@ router.post(
 						return Promise.reject('User already exists!');
 					}
 				});
-			}),
+			})
+			.normalizeEmail(),
 		body(
 			'password',
 			'Please enter password with alphanumeric with  5 min chars'
 		)
 			.isLength({ min: 5 })
-			.isAlphanumeric(),
-		body('confirmPassword').custom((value, { req }) => {
+			.isAlphanumeric()
+			.trim(),
+		body('confirmPassword').trim().custom((value, { req }) => {
 			if (value !== req.body.password) {
 				throw new Error('Passwords did not match');
 			}
