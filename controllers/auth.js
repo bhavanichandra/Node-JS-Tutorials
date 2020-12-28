@@ -76,7 +76,7 @@ exports.postSignup = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
-	user
+	User
 		.findOne({ email: email })
 		.then((user) => {
 			if (!user) {
