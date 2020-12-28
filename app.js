@@ -1,6 +1,11 @@
+const path = require('path');
+
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
+const mongoose = require('mongoose');
+
+const errorController = require('./controllers/error');
+const User = require('./models/user');
 
 const app = express();
 
@@ -9,9 +14,7 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-const errorHandler = require('./controllers/error-handling');
-const User = require('./models/user');
-const mongoose = require('mongoose');
+
 const env = require('dotenv').config();
 
 if (env.error) {
@@ -33,11 +36,11 @@ if (env.error) {
 	app.use('/admin', adminRoutes);
 	app.use(shopRoutes);
 
-	app.use(errorHandler.getPageNotFound);
+	app.use(errorController.get404);
 
 	mongoose
 		.connect(process.env.MONGODB_URL)
-		.then(() => {
+		.then((result) => {
 			User.findOne().then((user) => {
 				if (!user) {
 					const user = new User({
@@ -50,7 +53,9 @@ if (env.error) {
 					user.save();
 				}
 			});
-			app.listen(3001);
+			app.listen(3000);
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			console.log(err);
+		});
 }
