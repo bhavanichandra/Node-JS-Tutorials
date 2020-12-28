@@ -1,15 +1,56 @@
 const express = require('express');
-const authController = require('../controllers/auth');
+const { check, body } = require('express-validator/check');
 
+const authController = require('../controllers/auth');
+const User = require('../models/user');
 const router = express.Router();
 
 router.get('/login', authController.getLogin);
 
-router.post('/login', authController.postLogin);
+router.post(
+	'/login',
+	[
+		body('email', 'Please Enter valid Email').isEmail(),
+		body(
+			'password',
+			'Please enter password with alphanumeric with  5 min chars'
+		)
+			.isLength({ min: 5 })
+			.isAlphanumeric()
+	],
+	authController.postLogin
+);
 
 router.post('/logout', authController.postLogout);
 
-router.post('/signup', authController.postSignup);
+router.post(
+	'/signup',
+	[
+		check('email')
+			.isEmail()
+			.withMessage('Please Enter valid Email')
+			.custom((email, { req }) => {
+				return User.findOne({ email: email }).then((userDoc) => {
+					if (userDoc) {
+						return Promise.reject('User already exists!');
+					}
+				});
+			}),
+		body(
+			'password',
+			'Please enter password with alphanumeric with  5 min chars'
+		)
+			.isLength({ min: 5 })
+			.isAlphanumeric(),
+		body('confirmPassword').custom((value, { req }) => {
+			if (value !== req.body.password) {
+				throw new Error('Passwords did not match');
+			}
+			return true;
+		})
+	],
+	authController.postSignup
+);
 
 router.get('/signup', authController.getSignup);
 
