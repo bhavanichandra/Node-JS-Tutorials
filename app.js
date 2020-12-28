@@ -14,6 +14,7 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 const env = require('dotenv').config();
 
@@ -35,7 +36,7 @@ if (env.error) {
 
 	app.use('/admin', adminRoutes);
 	app.use(shopRoutes);
-
+	app.use(authRoutes);
 	app.use(errorController.get404);
 
 	mongoose
