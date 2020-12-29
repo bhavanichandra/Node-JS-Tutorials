@@ -5,14 +5,31 @@ const PDFDocument = require('pdfkit');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
+const ITEMS_PER_PAGE = 1;
+
 exports.getProducts = (req, res, next) => {
+	const page = +req.query.page || 1;
+	let totalItemsCount;
+
 	Product.find()
+		.countDocuments()
+		.then((numProducts) => {
+			totalItemsCount = +numProducts;
+			return Product.find()
+				.skip((page - 1) * ITEMS_PER_PAGE)
+				.limit(ITEMS_PER_PAGE);
+		})
 		.then((products) => {
 			res.render('shop/product-list', {
 				prods: products,
 				pageTitle: 'All Products',
 				path: '/products',
-				isAuthenticated: req.session.isLoggedIn
+				currentPage: page,
+				hasNextPage: ITEMS_PER_PAGE * page < totalItemsCount,
+				hasPreviousPage: page > 1,
+				nextPage: page + 1,
+				previousPage: page - 1,
+				lastPage: Math.ceil(totalItemsCount / ITEMS_PER_PAGE)
 			});
 		})
 		.catch((err) => {
@@ -34,12 +51,28 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+	const page = +req.query.page || 1;
+	let totalItemsCount;
+
 	Product.find()
+		.countDocuments()
+		.then((numProducts) => {
+			totalItemsCount = +numProducts;
+			return Product.find()
+				.skip((page - 1) * ITEMS_PER_PAGE)
+				.limit(ITEMS_PER_PAGE);
+		})
 		.then((products) => {
 			res.render('shop/index', {
 				prods: products,
 				pageTitle: 'Shop',
-				path: '/'
+				path: '/',
+				currentPage: page,
+				hasNextPage: ITEMS_PER_PAGE * page < totalItemsCount,
+				hasPreviousPage: page > 1,
+				nextPage: page + 1,
+				previousPage: page - 1,
+				lastPage: Math.ceil(totalItemsCount / ITEMS_PER_PAGE)
 			});
 		})
 		.catch((err) => {
@@ -158,7 +191,25 @@ exports.getInvoice = (req, res, next) => {
 			pdfDoc.pipe(fs.createWriteStream(invoicePath));
 			pdfDoc.pipe(res);
 
-			pdfDoc.text('Hello World!');
+			pdfDoc.fontSize(26).text('Invoice', {
+				underline: true
+			});
+			let totalPrice = 0;
+			order.products.forEach((prod) => {
+				totalPrice += prod.quantity * prod.product.price;
+				pdfDoc
+					.fontSize(14)
+					.text(
+						prod.product.title +
+							'-' +
+							prod.quantity +
+							' x ' +
+							'$' +
+							prod.product.price
+					);
+			});
+			pdfDoc.text('Total Price: $' + totalPrice);
+
 			pdfDoc.end();
 
 			// const file = fs.createReadStream(invoicePath);
