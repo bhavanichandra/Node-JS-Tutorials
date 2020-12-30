@@ -7,6 +7,7 @@ const multer = require('multer');
 const { v4: uuid } = require('uuid');
 
 const feedRoutes = require('./routes/feed');
+const authRoutes = require('./routes/auth');
 
 if (env.error) {
 	throw new Error('Please add environment file');
@@ -57,13 +58,15 @@ if (env.error) {
 	});
 
 	app.use('/feed', feedRoutes);
+	app.use('/auth', authRoutes);
 
 	// Error Handling Middleware
 	app.use((err, req, res, next) => {
 		console.log(err);
 		const statusCode = err.statusCode || 500;
 		const message = err.message;
-		res.status(statusCode).json({ message: message });
+		const data = err.data;
+		res.status(statusCode).json({ message: message, data: data });
 	});
 
 	mongoose
