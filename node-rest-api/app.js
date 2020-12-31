@@ -75,7 +75,11 @@ if (env.error) {
 			useUnifiedTopology: true
 		})
 		.then((result) => {
-			app.listen(8081);
+			const server = app.listen(8081);
+			const io = require('./socket').init(server);
+			io.on('connection', (socket) => {
+				console.log('connected');
+			});
 		})
 		.catch((err) => console.log(err));
 }
